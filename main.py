@@ -2,6 +2,7 @@ from twitchio.ext import commands
 import json
 import os
 import time
+import random
 
 class Bot(commands.Bot):
     OAUTH = os.environ['TWITCH_OAUTH']
@@ -38,7 +39,7 @@ class Bot(commands.Bot):
             time.sleep(2)
             await ctx.send_me( f'{challenger} please type -accept to box {ctx.author.name} for {wager} coins!')
         else:
-            await ctx.send(f'{ctx.author.id} you must challenge a person for 10 coins or more')
+            await ctx.send(f'{ctx.author.name} you must challenge a person for 10 coins or more')
     @box.error
     async def bot_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
@@ -46,8 +47,19 @@ class Bot(commands.Bot):
 
     @commands.command(name='accept')
     async def accept(self, ctx):
-        if box.challenger == ctx.author.name:
-            await ctx.send_me(f'{ctx.author.id} has challenged {challenger} for {wager} coins!', f'{challenger} please type -accept to box {ctx.author.name} for {wager} coins!')
+        match = random.randint(1, 2)
+        if challenger == ctx.author.name:
+            if match == 1:
+                await ctx.send_me(f'{ctx.author.name} has lost against {challenger} and lost {wager} coins!')
+                points = users[f"{challenger}"]["points"]
+                points += wager
+            else:
+                await ctx.send_me(f'{ctx.author.name} has won against {challenger} and gained {wager} coins!')
+                points = users[f"{ctx.author.id}"]["points"]
+                points += wager
+                
+        else:
+            pass
 
     @commands.command(name='points')
     async def points(self, ctx):
